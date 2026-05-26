@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Koo.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="teeheejk.jpg" type="image/png">
+
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+
+        body { 
+            color: white; 
+            overflow: hidden; 
+            background: #000; 
+        }
+
+        /* Volume Control Styling */
+        .volume-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.358);
+            padding: 15px 20px;
+            border-radius: 24px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #volIcon {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        #volSlider {
+            width: 120px;
+            height: 8px;
+            cursor: pointer;
+            accent-color: white;
+        }
+
+        #entry-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        .enter-text {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: lowercase;
+            color: white;
+        }
+
+        /* Snowflake Animation */
+        .snowflake { 
+            position: fixed; 
+            top: -10px; 
+            color: white; 
+            font-size: 40px; 
+            opacity: 0.8; 
+            user-select: none; 
+            pointer-events: none; 
+            animation: fall linear infinite; 
+            z-index: 0; 
+        }
+
+        @keyframes fall { 
+            to { transform: translateY(110vh); } 
+        }
+
+        #bg { 
+            position: fixed; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            z-index: -2; 
+        }
+
+        .overlay { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+        }
+
+        .main-container { 
+            position: relative; 
+            z-index: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 40px 20px; 
+        }
+
+        .glass-box { 
+            background: linear-gradient(to bottom, rgba(150, 148, 148, 0.573), rgba(211, 209, 209, 0.646)); 
+            border: 1px solid rgba(255, 255, 255, 0.107); 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 650px; 
+            padding: 60px 40px 40px 40px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
+            text-align: center; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .profile-pic { 
+            width: 130px; 
+            height: 130px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            margin: 0 auto 20px auto; 
+            background-color: #ffffff; 
+            filter: drop-shadow(0 0 30px rgb(255, 255, 255));
+        }
+
+        .username-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            margin-bottom: 12px; 
+        }
+
+        .username { 
+            font-size: 2.3rem; 
+            color: #000000; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            transition: all 0.3s ease; 
+            text-shadow: 0 0 12px rgba(0, 0, 0, 0.6); 
+            cursor: default; 
+            display: inline-block; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            border-right: 2px solid black; 
+            width: 13ch; 
+            animation: typing 3s steps(13, end), blink 0.75s step-end infinite; 
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 13ch } }
+        @keyframes blink { from, to { border-color: transparent } 50% { border-color: black } }
+
+        .username:hover { 
+            color: #ffffff; 
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px rgba(255, 255, 255, 0.3); 
+            transform: scale(1.05); 
+            border-right-color: transparent; 
+        }
+
+        .bio { 
+            font-size: 1.2rem; 
+            font-weight: 500; 
+            color: #000000; 
+            line-height: 1.7; 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); 
+        }
+
+        .location { 
+            font-size: 1rem; 
+            color: #000000; 
+            margin-top: auto; 
+            margin-bottom: 45px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.566); 
+        }
+
+        .socials { 
+            display: flex; 
+            justify-content: center; 
+            gap: 30px; 
+            margin-bottom: 40px; 
+        }
+
+        .socials a { 
+            color: rgb(0, 0, 0); 
+            font-size: 2.4rem; 
+            transition: transform 0.2s, color 0.2s; 
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8)); 
+        }
+
+        .socials a:hover { 
+            transform: scale(1.1); 
+            color: #ffffff; 
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); 
+        }
+
+        .music-player { 
+            background: rgba(168, 164, 164, 0.639); 
+            border: 1px solid rgba(255, 255, 255, 0.107); 
+            border-radius: 15px; 
+            padding: 20px 25px; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            width: 100%; 
+            max-width: 650px; 
+            margin-top: 25px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
+        }
+
+        .album-art { 
+            width: 65px; 
+            height: 65px; 
+            border-radius: 8px; 
+            background-color: #444; 
+            object-fit: cover; 
+        }
+
+        .track-info { 
+            flex-grow: 1; 
+            text-align: left; 
+        }
+
+        .track-name { 
+            font-size: 1.15rem; 
+            font-weight: 500; 
+            display: block; 
+            margin-bottom: 10px; 
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.6); 
+        }
+
+        .progress-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 0.9rem; 
+            color: #aaa; 
+        }
+
+        .progress-bar-bg { 
+            flex-grow: 1; 
+            height: 5px; 
+            background: rgba(255, 255, 255, 0.2); 
+            border-radius: 3px; 
+            position: relative; 
+            cursor: pointer; 
+        }
+
+        .progress-bar-fill { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            width: 0%; 
+            background: white; 
+            border-radius: 3px; 
+        }
+
+        .player-controls { 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            font-size: 1.4rem; 
+            color: #ffffff; 
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+        }
+
+        .player-controls i { cursor: pointer; }
+    </style>
+</head>
+
+<body>
+    <div class="volume-fixed">
+        <i class="fas fa-volume-up" id="volIcon"></i>
+        <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.3">
+    </div>
+
+    <div id="entry-screen">
+        <span class="enter-text">click to enter...</span>
+    </div>
+
+    <video autoplay muted loop id="bg">
+        <source src="https://res.cloudinary.com/dw4mv7p40/video/upload/v1779782032/ac07be29-5225-4caf-89cc-bd96d0888791_bpkuc9.mp4" type="video/mp4">
+    </video>
+
+    <audio id="audioTrack" src="ArianaBYE.mp3" loop></audio>
+
+    <div class="overlay"></div>
+
+    <div class="main-container">
+        <div class="glass-box">
+            <img src="teeheejk.jpg" alt="Profile" class="profile-pic">
+            <div class="username-wrapper">
+                <h1 class="username">@kookootrain.</h1>
+            </div>
+            <p class="bio">17 | Programmer & Designer | Grade 12 PCMC Student<br>Amber House Captain @ BRS AUH<br>Fullstack Developer - Py, Js, Ts, C#, HTML, Css</p>
+            <div class="location"><i class="fas fa-map-marker-alt"></i> UAE | Abu Dhabi</div>
+            <div class="socials">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-spotify"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+
+        <div class="music-player">
+            <img src="arianapfp.jpg" alt="Album Art" class="album-art">
+            <div class="track-info">
+                <span class="track-name">Ariana Grande - Bye</span>
+                <div class="progress-row">
+                    <span id="currentTime">0:00</span>
+                    <div class="progress-bar-bg" id="progressBar">
+                        <div class="progress-bar-fill" id="progressFill"></div>
+                    </div>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+            <div class="player-controls">
+                <i class="fas fa-backward-step"></i>
+                <i id="playPauseBtn" class="fas fa-pause"></i>
+                <i class="fas fa-forward-step"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audioTrack');
+        const entryScreen = document.getElementById('entry-screen');
+        const volSlider = document.getElementById('volSlider');
+        const volIcon = document.getElementById('volIcon');
+
+        // Set initial volume
+        audio.volume = 0.3;
+
+        function createSnowflake() {
+            const snow = document.createElement("div");
+            snow.classList.add("snowflake");
+            snow.innerHTML = "❄";
+            snow.style.left = Math.random() * window.innerWidth + "px";
+            snow.style.fontSize = 15 + "px";
+            snow.style.animationDuration = 10 + "s";
+            document.body.appendChild(snow);
+            setTimeout(() => { snow.remove(); }, 12000);
+        }
+
+        setInterval(createSnowflake, 800);
+
+        const playPauseBtn = document.getElementById('playPauseBtn');
+
+        entryScreen.addEventListener('click', () => {
+            entryScreen.style.opacity = '0';
+            setTimeout(() => { entryScreen.style.display = 'none'; }, 500);
+            audio.play();
+        });
+
+        // Songggggggggg 
+        const progressFill = document.getElementById('progressFill');
+        const progressBar = document.getElementById('progressBar');
+        const curTimeText = document.getElementById('currentTime');
+        const durTimeText = document.getElementById('duration');
+
+        volSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+            volIcon.className = e.target.value == 0 ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) { 
+                audio.play(); 
+                playPauseBtn.className = 'fas fa-pause'; 
+            } else { 
+                audio.pause(); 
+                playPauseBtn.className = 'fas fa-play'; 
+            }
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = progress + '%';
+            const m = Math.floor(audio.currentTime / 60);
+            const s = Math.floor(audio.currentTime % 60);
+            curTimeText.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            const m = Math.floor(audio.duration / 60);
+            const s = Math.floor(audio.duration % 60);
+            durTimeText.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        });
+
+        progressBar.addEventListener('click', (e) => {
+            audio.currentTime = (e.offsetX / progressBar.clientWidth) * audio.duration;
+        });
+    </script>
+</body>
+</html>
